@@ -5,63 +5,69 @@
     <meta charset="utf-8" />
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" /> 	
-	<link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="style.css"/>
 
-	<title>Jody's Coding Test</title>
+    <title>Jody's Coding Test</title>
 
 </head> 
 
 <body>
 
 	<header>
-		<h1>TV Show Titles Extracted From The TVMase Database Using The TVMase API</h1>
-		<h2>The below TV shows have been extracted from the TVMase database using the search words of Red, Green, Blue, and Yellow. The colour of the show title matches the first searched keyword. The show's premier date and runtime are also listed if they are available from the database.</h2><br>
+		<h1>Movies Extracted From The Rotten Tomatoes Database Using The Rotten Tomatoes API</h1>
+		<h2>The below movies have been extracted from The Rotten Tomatoes database using the search words of Red, Green, Blue, and Yellow. The colour of the movie matches the first searched keyword. The movie's year and runtime are also listed.</h2><br>
 	</header>
 
 
 <?php
-
-	// function to extract data from the TVMase database
+	
+	// function to extract data from the Rotten Tomatoes database
 	function displayShow($colour){
 
+		$apikey = '6qvrmbehyspcu57hma2q222z';
+
+		$q = urlencode($colour);
+
+		// setting the API endpoint
+		$endpoint = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=' . $apikey . '&q=' . $q;
+
 		// using cURL to make the http request to access data from the outside web page
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_URL, "http://api.tvmaze.com/search/shows?q=$colour");
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($curl, CURLOPT_HEADER, FALSE);
-		curl_setopt($curl, CURLOPT_HTTPHEADER, array("Accept: application/json"));
-		$response = curl_exec($curl);
-		curl_close($curl);
-		$result = json_decode($response, true);
+		$session = curl_init($endpoint);
 
-			// for loop to list the results
-			for ($x = 0; $x < count($result); $x++) {
+		curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 
-				// regex to identify the first keyword from each show name
-				$str = $result[$x]['show']['name'];
-				$regex = '/(Red|RED|red|Green|GREEN|green|Blue|BLUE|blue|Yellow|YELLOW|yellow)/';
+		$data = curl_exec($session);
 
-				if (preg_match($regex, $str, $match))
+		curl_close($session);
+
+		$search_results = json_decode($data);
+
+		if ($search_results === NULL) die('Error parsing json');
+
+		$movies = $search_results->movies;
+
+		echo '<ul>';
+
+		foreach ($movies as $movie) {
 
 ?>
 
-	<!-- displaying the results in html -->
-	<h3 style="color:<?php echo $match[0]; ?>;"><?php echo $str ?></h3>
-	<p>Date show premiered: <?php echo $result[$x]['show']['premiered'] ?></p>
-	<p>Show runtime: <?php echo $result[$x]['show']['runtime'] ?> minutes</p><br>
-
-<?php
+<!-- displaying the results in HTML and CSS -->
+<h3 style="color:<?php echo $colour; ?>; list-style: none;"><?php echo '<li> Title: ' . $movie->title . " /   Year: " . $movie->year . " /   Runtime: " . $movie->runtime . " minutes </li>"; ?></h3>
 	
-	// closing the PHP
-	}
-	}
-?>
+<?php
+		}
 
-	<!-- calling the displayShow() function with CSS styling -->
-	<div class="red"><?php displayShow("red"); ?></div>
-	<div class="green"><?php displayShow("green"); ?></div>
-	<div class="blue"><?php displayShow("blue"); ?></div>
-	<div class="yellow"><?php displayShow("yellow"); ?></div>
+		echo '</ul>';
+
+}
+
+		// calling the displayShow function
+		displayShow("red");
+		displayShow("green");
+		displayShow("blue");
+		displayShow("yellow");
+?>
 	
 </body>
 </html>
