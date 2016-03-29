@@ -8,27 +8,3 @@ h1, h2, h3, p {
 	text-align: center;
 	font-family: arial;
 }
-
-.red {
-	background: rgba(255, 0, 0, 0.2);
-	margin: 0;
-	padding: 50px;
-}
-
-.green {
-	background: rgba(0, 255, 0, 0.2);
-	margin: 0;
-	padding: 50px;
-}
-
-.blue {
-	background: rgba(0, 0, 255, 0.2);
-	margin: 0;
-	padding: 50px;
-}
-
-.yellow {
-	background: rgba(255, 255, 0, 0.2);
-	margin: 0;
-	padding: 50px;
-}
